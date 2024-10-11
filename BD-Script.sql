@@ -1,94 +1,101 @@
-CREATE database Alianza;
+CREATE DATABASE Alianza;
 
 USE Alianza;
 
-CREATE TABLE Funcionario (
-    idFuncionario INT AUTO_INCREMENT PRIMARY KEY,
+-- Tabela que define tipos de empresas (ex.: Companhia Aérea, Aeroporto)
+CREATE TABLE tbTipoEmpresa (
+    idTipoEmpresa INT PRIMARY KEY,
+    tipo VARCHAR(45)
+);
+
+-- Tabela de empresas, com relação ao tipo de empresa
+CREATE TABLE tbEmpresa (
+    idEmpresa INT PRIMARY KEY,
+    razaoSocial VARCHAR(45),
+    siglaICAO VARCHAR(3),
+    cnpj CHAR(14) UNIQUE,
+    fkTipoEmpresa INT,
+    FOREIGN KEY (fkTipoEmpresa) REFERENCES tbTipoEmpresa(idTipoEmpresa)
+);
+
+-- Tabela que define tipos de usuários (ex.: administrador, operador)
+CREATE TABLE tbTipoUsuario (
+    idTipoUsuario INT PRIMARY KEY,
+    tipo VARCHAR(45)
+);
+
+-- Tabela de usuários, com relação ao tipo de usuário e à empresa
+CREATE TABLE tbUsuario (
+    idUsuario INT PRIMARY KEY,
     Nome VARCHAR(50) NOT NULL,
-    CPF CHAR(11) NOT NULL,
-    Cargo VARCHAR(50) NOT NULL
+    CPF CHAR(11) NOT NULL UNIQUE,
+    Cargo VARCHAR(50) NOT NULL,
+    Email VARCHAR(50) NOT NULL UNIQUE,
+    Senha VARCHAR(10) NOT NULL,
+    fkTipoUsuario INT,
+    fkEmpresa INT,
+    FOREIGN KEY (fkTipoUsuario) REFERENCES tbTipoUsuario(idTipoUsuario),
+    FOREIGN KEY (fkEmpresa) REFERENCES tbEmpresa(idEmpresa)
 );
 
-CREATE TABLE Aeroporto (
-    idAeroporto INT AUTO_INCREMENT PRIMARY KEY,
-    Nome VARCHAR(45) NOT NULL,
-    Sigla VARCHAR(45),
-    CNPJ CHAR(14),
-    CEP CHAR(9),
-    Funcionario_idFuncionario INT,
-    FOREIGN KEY (Funcionario_idFuncionario) REFERENCES Funcionario(idFuncionario)
+-- Tabela de aeroportos
+CREATE TABLE tbAeroporto (
+    idAeroporto INT PRIMARY KEY,
+    nome VARCHAR(45),
+    siglaICAO VARCHAR(3)
 );
 
-CREATE TABLE Companhia (
-    idCompanhia INT AUTO_INCREMENT PRIMARY KEY,
-    Nome VARCHAR(45) NOT NULL,
-    Sigla VARCHAR(45),
-    CNPJ CHAR(14),
-    Funcionario_idFuncionario INT,
-    FOREIGN KEY (Funcionario_idFuncionario) REFERENCES Funcionario(idFuncionario)
+-- Tabela de companhias aéreas
+CREATE TABLE tbCompanhia (
+    idCompanhia INT PRIMARY KEY,
+    nome VARCHAR(45),
+    siglaICAO VARCHAR(3)
 );
 
-CREATE TABLE Voo (
-    idVoo INT AUTO_INCREMENT PRIMARY KEY,
-    Companhia_idCompanhia INT,
-    idAeroportoInicial INT,
-    idAeroportoFinal INT,
-    PrevChegada VARCHAR(45),
-    Chegada VARCHAR(45),
-    PrevSaida VARCHAR(45),
-    Saida VARCHAR(45),
-    SituacaoVoo VARCHAR(45),
-    FOREIGN KEY (Companhia_idCompanhia) REFERENCES Companhia(idCompanhia),
-    FOREIGN KEY (idAeroportoInicial) REFERENCES Aeroporto(idAeroporto),
-    FOREIGN KEY (idAeroportoFinal) REFERENCES Aeroporto(idAeroporto)
+-- Tabela que define o status do voo
+CREATE TABLE tbStatusVoo (
+    idStatusVoo INT PRIMARY KEY,
+    status VARCHAR(20) NOT NULL
 );
 
--- Dados de testes
+-- Tabela de voos
+CREATE TABLE voo (
+    idVoo INT PRIMARY KEY,
+    fkCompanhia INT,
+    FOREIGN KEY (fkCompanhia) REFERENCES tbCompanhia(idCompanhia),
+    numeroVoo VARCHAR(10),
+    fkAeroportoOrigem INT,
+    FOREIGN KEY (fkAeroportoOrigem) REFERENCES tbAeroporto(idAeroporto),
+    partidaPrevista DATETIME,
+    partidaReal DATETIME,
+    fkAeroportoDestino INT,
+    FOREIGN KEY (fkAeroportoDestino) REFERENCES tbAeroporto(idAeroporto),
+    chegadaPrevista DATETIME,
+    chegadaReal DATETIME,
+    fkStatusVoo INT,
+    FOREIGN KEY (fkStatusVoo) REFERENCES tbStatusVoo(idStatusVoo)
+);
 
-INSERT INTO Funcionario (Nome, CPF, Cargo) VALUES
-('João Silva', '12345678901', 'Gerente de Aeroporto'),
-('Maria Souza', '98765432100', 'Piloto'),
-('Carlos Pereira', '11122233344', 'Gerente de Companhia');
+SELECT v.idVoo, 
+       c.nome AS Companhia, 
+       a1.nome AS AeroportoSaida, 
+       a2.nome AS AeroportoChegada, 
+       v.partidaPrevista, 
+       v.partidaReal, 
+       v.chegadaPrevista, 
+       v.chegadaReal, 
+       s.status AS SituacaoVoo
+FROM voo v
+JOIN tbCompanhia c ON v.fkCompanhia = c.idCompanhia
+JOIN tbAeroporto a1 ON v.fkAeroportoOrigem = a1.idAeroporto
+JOIN tbAeroporto a2 ON v.fkAeroportoDestino = a2.idAeroporto
+JOIN tbStatusVoo s ON v.fkStatusVoo = s.idStatusVoo;
 
-INSERT INTO Aeroporto (Nome, Sigla, CNPJ, CEP, Funcionario_idFuncionario) VALUES
-('Aeroporto Internacional de Guarulhos', 'GRU', '12345678000101', '07190000', 1),
-('Aeroporto Internacional de Brasília', 'BSB', '98765432000102', '71608900', 1);
+SELECT u.Nome AS Funcionario, 
+       u.Cargo, 
+       e.razaoSocial AS Empresa
+FROM tbUsuario u
+JOIN tbEmpresa e ON u.fkEmpresa = e.idEmpresa
+JOIN tbTipoEmpresa te ON e.fkTipoEmpresa = te.idTipoEmpresa
+WHERE te.tipo = 'Aeroporto';  -- Ou 'Companhia Aérea', dependendo do caso.
 
-INSERT INTO Companhia (Nome, Sigla, CNPJ, Funcionario_idFuncionario) VALUES
-('LATAM Airlines', 'LATAM', '11223344000199', 3),
-('Gol Linhas Aéreas', 'GOL', '22334455000188', 3);
-
-INSERT INTO Voo (Companhia_idCompanhia, idAeroportoInicial, idAeroportoFinal, PrevChegada, Chegada, PrevSaida, Saida, SituacaoVoo) VALUES
-(1, 1, 2, '12:00', '12:15', '10:00', '10:05', 'Concluído'),
-(2, 2, 1, '14:30', '14:50', '12:00', '12:10', 'Atrasado');
--- Fim da inserção de dados
-
--- Teste de selects
-SELECT V.idVoo, 
-	   C.Nome AS Companhia, 
-       A1.Nome AS AeroportoSaida, 
-       A2.Nome AS AeroportoChegada, 
-       V.PrevSaida, V.Saida, V.PrevChegada, V.Chegada, V.SituacaoVoo
-FROM Voo V
-JOIN Companhia C ON V.Companhia_idCompanhia = C.idCompanhia
-JOIN Aeroporto A1 ON V.idAeroportoInicial = A1.idAeroporto
-JOIN Aeroporto A2 ON V.idAeroportoFinal = A2.idAeroporto;
-
-SELECT F.Nome AS Funcionario, F.Cargo, A.Nome AS Aeroporto
-FROM Funcionario F
-JOIN Aeroporto A ON F.idFuncionario = A.Funcionario_idFuncionario
-WHERE F.idFuncionario = 1;
-
-SELECT F.Nome AS Funcionario, F.Cargo, C.Nome AS Companhia
-FROM Funcionario F
-JOIN Companhia C ON F.idFuncionario = C.Funcionario_idFuncionario
-WHERE F.idFuncionario = 3;
--- Fim dos teste de select
-
--- Deletando dados mocados
-SET SQL_SAFE_UPDATES = 0;
-DELETE FROM Voo;
-DELETE FROM Companhia;
-DELETE FROM Aeroporto;
-DELETE FROM Funcionario;
-SET SQL_SAFE_UPDATES = 1;
