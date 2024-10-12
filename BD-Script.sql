@@ -52,18 +52,14 @@ CREATE TABLE tbCompanhia (
     siglaICAO VARCHAR(3)
 );
 
--- Tabela que define o status do voo
-CREATE TABLE tbStatusVoo (
-    idStatusVoo INT PRIMARY KEY,
-    status VARCHAR(20) NOT NULL
-);
-
 -- Tabela de voos
 CREATE TABLE voo (
     idVoo INT PRIMARY KEY,
     fkCompanhia INT,
     FOREIGN KEY (fkCompanhia) REFERENCES tbCompanhia(idCompanhia),
     numeroVoo VARCHAR(10),
+    codigoDI CHAR(3),
+    codigoTipoLinha CHAR(3),
     fkAeroportoOrigem INT,
     FOREIGN KEY (fkAeroportoOrigem) REFERENCES tbAeroporto(idAeroporto),
     partidaPrevista DATETIME,
@@ -72,8 +68,7 @@ CREATE TABLE voo (
     FOREIGN KEY (fkAeroportoDestino) REFERENCES tbAeroporto(idAeroporto),
     chegadaPrevista DATETIME,
     chegadaReal DATETIME,
-    fkStatusVoo INT,
-    FOREIGN KEY (fkStatusVoo) REFERENCES tbStatusVoo(idStatusVoo)
+    StatusVoo VARCHAR(45)
 );
 
 SELECT v.idVoo, 
