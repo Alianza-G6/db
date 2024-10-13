@@ -1,32 +1,29 @@
+-- DROP DATABASE Alianza;
 CREATE DATABASE Alianza;
 
 USE Alianza;
 
--- Tabela que define tipos de empresas (ex.: Companhia Aérea, Aeroporto)
 CREATE TABLE tbTipoEmpresa (
-    idTipoEmpresa INT PRIMARY KEY,
+    idTipoEmpresa INT PRIMARY KEY AUTO_INCREMENT,
     tipo VARCHAR(45)
 );
 
--- Tabela de empresas, com relação ao tipo de empresa
 CREATE TABLE tbEmpresa (
-    idEmpresa INT PRIMARY KEY,
+    idEmpresa INT PRIMARY KEY AUTO_INCREMENT,
     razaoSocial VARCHAR(45),
-    siglaICAO VARCHAR(3),
+    siglaICAO VARCHAR(100),
     cnpj CHAR(14) UNIQUE,
     fkTipoEmpresa INT,
     FOREIGN KEY (fkTipoEmpresa) REFERENCES tbTipoEmpresa(idTipoEmpresa)
 );
 
--- Tabela que define tipos de usuários (ex.: administrador, operador)
 CREATE TABLE tbTipoUsuario (
-    idTipoUsuario INT PRIMARY KEY,
+    idTipoUsuario INT PRIMARY KEY AUTO_INCREMENT,
     tipo VARCHAR(45)
 );
 
--- Tabela de usuários, com relação ao tipo de usuário e à empresa
 CREATE TABLE tbUsuario (
-    idUsuario INT PRIMARY KEY,
+    idUsuario INT PRIMARY KEY AUTO_INCREMENT,
     Nome VARCHAR(50) NOT NULL,
     CPF CHAR(11) NOT NULL UNIQUE,
     Cargo VARCHAR(50) NOT NULL,
@@ -38,28 +35,26 @@ CREATE TABLE tbUsuario (
     FOREIGN KEY (fkEmpresa) REFERENCES tbEmpresa(idEmpresa)
 );
 
--- Tabela de aeroportos
 CREATE TABLE tbAeroporto (
-    idAeroporto INT PRIMARY KEY,
+    idAeroporto INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(45),
-    siglaICAO VARCHAR(3)
+    siglaICAO VARCHAR(100)
 );
 
 -- Tabela de companhias aéreas
 CREATE TABLE tbCompanhia (
-    idCompanhia INT PRIMARY KEY,
+    idCompanhia INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(45),
-    siglaICAO VARCHAR(3)
+    siglaICAO VARCHAR(100)
 );
 
--- Tabela de voos
 CREATE TABLE voo (
-    idVoo INT PRIMARY KEY,
+    idVoo INT PRIMARY KEY AUTO_INCREMENT,
     fkCompanhia INT,
     FOREIGN KEY (fkCompanhia) REFERENCES tbCompanhia(idCompanhia),
-    numeroVoo VARCHAR(10),
-    codigoDI CHAR(3),
-    codigoTipoLinha CHAR(3),
+    numeroVoo VARCHAR(100),
+    codigoDI CHAR(100),
+    codigoTipoLinha CHAR(100),
     fkAeroportoOrigem INT,
     FOREIGN KEY (fkAeroportoOrigem) REFERENCES tbAeroporto(idAeroporto),
     partidaPrevista DATETIME,
@@ -71,26 +66,5 @@ CREATE TABLE voo (
     StatusVoo VARCHAR(45)
 );
 
-SELECT v.idVoo, 
-       c.nome AS Companhia, 
-       a1.nome AS AeroportoSaida, 
-       a2.nome AS AeroportoChegada, 
-       v.partidaPrevista, 
-       v.partidaReal, 
-       v.chegadaPrevista, 
-       v.chegadaReal, 
-       s.status AS SituacaoVoo
-FROM voo v
-JOIN tbCompanhia c ON v.fkCompanhia = c.idCompanhia
-JOIN tbAeroporto a1 ON v.fkAeroportoOrigem = a1.idAeroporto
-JOIN tbAeroporto a2 ON v.fkAeroportoDestino = a2.idAeroporto
-JOIN tbStatusVoo s ON v.fkStatusVoo = s.idStatusVoo;
-
-SELECT u.Nome AS Funcionario, 
-       u.Cargo, 
-       e.razaoSocial AS Empresa
-FROM tbUsuario u
-JOIN tbEmpresa e ON u.fkEmpresa = e.idEmpresa
-JOIN tbTipoEmpresa te ON e.fkTipoEmpresa = te.idTipoEmpresa
-WHERE te.tipo = 'Aeroporto';  -- Ou 'Companhia Aérea', dependendo do caso.
-
+SELECT * FROM voo;
+SELECT count(idVoo) as 'Quantidade De Voos' FROM voo;
