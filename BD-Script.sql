@@ -14,7 +14,10 @@ CREATE TABLE tbEmpresa (
     siglaICAO VARCHAR(100),
     cnpj CHAR(14) UNIQUE,
     fkTipoEmpresa INT,
-    FOREIGN KEY (fkTipoEmpresa) REFERENCES tbTipoEmpresa(idTipoEmpresa)
+    FOREIGN KEY (fkTipoEmpresa) REFERENCES tbTipoEmpresa(idTipoEmpresa),
+    codigoAtivacao varchar(55),
+    empresaStatus VARCHAR(20),
+    CHECK (empresaStatus IN ('Ativa', 'Desativada'))
 );
 
 CREATE TABLE tbTipoUsuario (
@@ -26,7 +29,6 @@ CREATE TABLE tbUsuario (
     idUsuario INT PRIMARY KEY AUTO_INCREMENT,
     Nome VARCHAR(50) NOT NULL,
     CPF CHAR(11) NOT NULL UNIQUE,
-    Cargo VARCHAR(50) NOT NULL,
     Email VARCHAR(50) NOT NULL UNIQUE,
     Senha VARCHAR(10) NOT NULL,
     fkTipoUsuario INT,
@@ -34,6 +36,15 @@ CREATE TABLE tbUsuario (
     FOREIGN KEY (fkTipoUsuario) REFERENCES tbTipoUsuario(idTipoUsuario),
     FOREIGN KEY (fkEmpresa) REFERENCES tbEmpresa(idEmpresa)
 );
+
+CREATE TABLE tbFeedback (
+	idFeedback INT PRIMARY KEY AUTO_INCREMENT,
+    resumo VARCHAR(100),
+	feedback VARCHAR(500),
+	dataCriacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    fkUsuario INT,
+    FOREIGN KEY(fkUsuario) REFERENCES tbUsuario(idUsuario)
+);		
 
 CREATE TABLE tbAeroporto (
     idAeroporto INT PRIMARY KEY AUTO_INCREMENT,
