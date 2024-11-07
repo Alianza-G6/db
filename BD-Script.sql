@@ -1,7 +1,7 @@
--- DROP DATABASE Alianza;
-CREATE DATABASE Alianza;
+-- DROP DATABASE alianza;
+CREATE DATABASE alianza;
 
-USE Alianza;
+USE alianza;
 select * from tbUsuario;
 
 CREATE TABLE tbTipoEmpresa (
