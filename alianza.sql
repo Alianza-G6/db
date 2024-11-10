@@ -2,7 +2,6 @@
 CREATE DATABASE alianza;
 
 USE alianza;
-select * from tbUsuario;
 
 CREATE TABLE tbTipoEmpresa (
     idTipoEmpresa INT PRIMARY KEY AUTO_INCREMENT,
