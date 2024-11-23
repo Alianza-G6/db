@@ -1,4 +1,4 @@
--- DROP DATABASE alianza;
+DROP DATABASE IF EXISTS alianza;
 CREATE DATABASE alianza;
 
 USE alianza;
