@@ -115,7 +115,7 @@ insert into tbTipoUsuario values
 
 INSERT INTO tbUsuario (nome, cpf, email, senha, fkEmpresa, fkTipoUsuario) 
 VALUES ('Fernanda', '12312312312', 'fernanda@gmail.com', '1212', 1, 1);
-INSERT INTO tbusuario (nome, cpf, email, senha, fkEmpresa, fkTipoUsuario)
+INSERT INTO tbUsuario (nome, cpf, email, senha, fkEmpresa, fkTipoUsuario)
 VALUES ('Ellen', '09497715897', 'ellen.admin@gmail.com', '1212', 1, 3);
 
 
