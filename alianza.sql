@@ -1,4 +1,4 @@
--- DROP DATABASE alianza;
+DROP DATABASE IF EXISTS alianza;
 CREATE DATABASE alianza;
 
 USE alianza;
@@ -113,8 +113,10 @@ insert into tbTipoUsuario values
 
 INSERT INTO tbUsuario (nome, cpf, email, senha, fkEmpresa, fkTipoUsuario) 
 VALUES ('Fernanda', '12312312312', 'fernanda@gmail.com', '1212', 1, 1);
+
 INSERT INTO tbusuario (nome, cpf, email, senha, fkEmpresa, fkTipoUsuario)
 VALUES ('Alianza', '09497715897', 'alianza.admin@gmail.com', '1212', 2, 3);
+
 
 select * from tbEmpresa;
 select * from tbUsuario;
